@@ -1,0 +1,19 @@
+{% extends "layout.html" %}
+{% load static %}
+
+{% block css_file %}
+    <link rel="stylesheet" href="{% static 'frontend/css/anaSayfa.css' %}">
+{% endblock %}
+
+{% block content_anaSayfa %}
+{% comment %} ali ve cebeci html kodları buraya {% endcomment %} 
+
+
+
+<div class="hero-container">
+    <a href="{% url 'odalar' %}" class="hero-button">
+        ODALARIMIZI GÖRÜN
+    </a>
+</div>
+
+{% endblock content_anaSayfa %}
