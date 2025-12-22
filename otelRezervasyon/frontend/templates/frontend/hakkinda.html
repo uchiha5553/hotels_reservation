@@ -1,10 +1,34 @@
 {% extends "layout.html" %}
 {% load static %}
 
-{% comment %} {% block css_file %}
-    <link rel="stylesheet" href="{% static 'frontend/css/style.css' %}">
-{% endblock %} {% endcomment %}
+{% block content_hakkinda %}
 
-{% block content_anaSayfa %}
-{% comment %} ali ve cebeci html kodları buraya {% endcomment %}
-{% endblock content_anaSayfa %}
+<div class="card text-bg-dark border-0" style="border-radius: 0;">
+    <div style="position: relative; background-color: #000; overflow: hidden;">
+        <img src="{% static 'frontend/image/arkaPlan2.png' %}" 
+             class="card-img" 
+             style="opacity: 0.4; min-height: 500px; object-fit: cover; filter: brightness(0.8);">
+        <div class="card-img-overlay d-flex flex-column justify-content-start text-center pt-5">
+            <h1 class="card-title fw-bold mt-4 mb-4" style="font-size: 3rem; text-shadow: 2px 2px 4px rgba(0,0,0,0.5);">
+                Konfor ve Huzurun Buluşma Noktası
+            </h1>
+            
+            <div class="container">
+                <p class="card-text fs-5 mx-auto" style="max-width: 850px; line-height: 1.8; opacity: 0.95;">
+                    Asarcık Palace Hotel olarak, misafirlerimize sadece bir konaklama değil, unutulmaz bir deneyim sunmak için yola çıktık. 
+                    Modern mimarimizle geleneksel Türk misafirperverliğini harmanlayarak, her bir detayını özenle tasarladığımız 
+                    otelimizde sizleri ağırlamaktan mutluluk duyuyoruz.
+                </p>
+                
+                <p class="card-text d-none d-md-block mt-3 mx-auto" style="max-width: 800px; font-size: 1.1rem; opacity: 0.8;">
+                    Neden Biz? Şehrin stresinden uzak, doğayla iç içe huzurlu bir mola vermek isteyenlerin adresi olan 
+                    Asarcık Palace; yüksek konfor standartları ve kaliteli hizmet anlayışıyla fark yaratmaktadır.
+                </p>
+            </div>
+
+            <div class="mb-auto"></div>
+
+        </div>
+    </div>
+</div>
+{% endblock content_hakkinda %}
