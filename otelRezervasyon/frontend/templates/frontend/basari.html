@@ -1,0 +1,11 @@
+{% extends "layout.html" %}
+{% block content_basari %}
+<div class="container my-5 text-center">
+    <div class="alert alert-success p-5">
+        <i class="fas fa-check-circle fa-4x mb-3"></i>
+        <h1>Rezervasyon Başarılı!</h1>
+        <p class="lead">Odanız ayrıldı. Oda Numaranız: <strong>{{ oda_no }}</strong></p>
+        <a href="{% url 'anaSayfa' %}" class="btn btn-outline-success">Ana Sayfaya Dön</a>
+    </div>
+</div>
+{% endblock %}

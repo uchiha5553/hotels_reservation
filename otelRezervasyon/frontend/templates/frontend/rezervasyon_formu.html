@@ -1,0 +1,85 @@
+{% extends "layout.html" %}
+{% block content_rezervasyon %}
+<div class="container my-5">
+    <div class="card shadow-lg border-0 mx-auto" style="max-width: 700px; border-radius: 15px;">
+        <div class="card-header bg-dark text-white text-center py-3">
+            <h4 class="mb-0">{{ oda_tipi.baslik }} Rezervasyonu</h4>
+        </div>
+        <div class="card-body p-4">
+            <form method="POST">
+                {% csrf_token %}
+                
+                <h5 class="text-primary border-bottom pb-2 mb-3">Rezervasyonu Yapan Kişi</h5>
+                <div class="row mb-3">
+                    <div class="col-md-6 mb-2">
+                        <label class="form-label small fw-bold">Ad</label>
+                        <input type="text" name="ad" class="form-control" required>
+                    </div>
+                    <div class="col-md-6 mb-2">
+                        <label class="form-label small fw-bold">Soyad</label>
+                        <input type="text" name="soyad" class="form-control" required>
+                    </div>
+                    <div class="col-md-6 mb-2">
+                        <label class="form-label small fw-bold">TC Kimlik No</label>
+                        <input type="text" name="tc_no" class="form-control" maxlength="11" oninput="this.value = this.value.replace(/[^0-9]/g, '');" required>
+                    </div>
+                    <div class="col-md-6 mb-2">
+                        <label class="form-label small fw-bold">E-posta</label>
+                        <input type="email" name="email" class="form-control" placeholder="ornek@mail.com" required>
+                    </div>
+                    <div class="col-12 mb-2">
+                        <label class="form-label small fw-bold">Telefon</label>
+                        <input type="text" name="telefon" class="form-control" placeholder="05XX..." required>
+                    </div>
+                </div>
+
+                <div class="mb-4 p-3 bg-light rounded">
+                    <label class="form-label fw-bold">Toplam Misafir Sayısı</label>
+                    <select name="kisi_sayisi" id="kisiSayisiSecim" class="form-select border-primary" required>
+                        {% for i in "12345"|make_list %}
+                            {% if forloop.counter <= oda_tipi.kapasite %}
+                                <option value="{{ forloop.counter }}">{{ forloop.counter }} Kişi</option>
+                            {% endif %}
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div id="digerKonaklayanlar"></div>
+
+                <h5 class="text-secondary border-bottom pb-2 mb-3">Konaklama Tarihleri</h5>
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <label class="form-label small fw-bold">Giriş Tarihi</label>
+                        <input type="date" name="giris_tarihi" class="form-control" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label small fw-bold">Çıkış Tarihi</label>
+                        <input type="date" name="cikis_tarihi" class="form-control" required>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-dark w-100 py-3 fw-bold">REZERVASYONU TAMAMLA</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+document.getElementById('kisiSayisiSecim').addEventListener('change', function() {
+    const sayi = parseInt(this.value);
+    const container = document.getElementById('digerKonaklayanlar');
+    container.innerHTML = ''; 
+    for (let i = 2; i <= sayi; i++) {
+        container.innerHTML += `
+            <div class="p-3 mb-3 border rounded bg-white shadow-sm">
+                <h6 class="text-muted mb-3">${i}. Misafir Bilgileri</h6>
+                <div class="row">
+                    <div class="col-md-4"><input type="text" name="ek_ad[]" class="form-control mb-2" placeholder="Ad" required></div>
+                    <div class="col-md-4"><input type="text" name="ek_soyad[]" class="form-control mb-2" placeholder="Soyad" required></div>
+                    <div class="col-md-4"><input type="text" name="ek_tc[]" class="form-control mb-2" placeholder="TC No" maxlength="11" required></div>
+                </div>
+            </div>`;
+    }
+});
+</script>
+{% endblock %}

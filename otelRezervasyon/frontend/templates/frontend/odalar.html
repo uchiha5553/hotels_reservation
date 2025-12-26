@@ -1,10 +1,84 @@
 {% extends "layout.html" %}
 {% load static %}
 
-{% comment %} {% block css_file %}
-    <link rel="stylesheet" href="{% static 'frontend/css/style.css' %}">
-{% endblock %} {% endcomment %}
+{% block content_odalar %}
+<div class="card text-bg-dark border-0 rounded-0 overflow-hidden" style="height: 350px;">
+    <img src="{% static 'frontend/image/arkaPlan2.png' %}" class="card-img" alt="Asarcık Rooms" 
+         style="object-fit: cover; height: 100%; filter: brightness(40%);">
+    <div class="card-img-overlay d-flex flex-column justify-content-center align-items-center text-center">
+        <h1 class="display-3 fw-bold text-uppercase" style="letter-spacing: 2px;">Odalar ve Suitler</h1>
+        <div style="width: 60px; height: 4px; background-color: #d4af37;" class="my-3"></div>
+        <p class="fs-4 italic">Asarcık Palace Hotel'de ev konforunu keşfedin.</p>
+    </div>
+</div>
 
-{% block content_anaSayfa %}
-{% comment %} ali ve cebeci html kodları buraya {% endcomment %}
-{% endblock content_anaSayfa %}
+<div class="container my-5">
+    <div class="row row-cols-1 row-cols-md-2 g-5">
+        {% for tip in oda_tipleri %}
+        <div class="col">
+            <div class="card h-100 shadow border-0 transition-hover">
+                <div class="position-relative">
+                    {% if tip.resim %}
+                        <img src="{{ tip.resim.url }}" class="card-img-top" alt="{{ tip.baslik }}" style="height: 300px; object-fit: cover;">
+                    {% else %}
+                        <img src="{% static 'frontend/image/default_room.jpg' %}" class="card-img-top" alt="Görsel Yok" style="height: 300px; object-fit: cover;">
+                    {% endif %}
+                    <div class="position-absolute top-0 end-0 m-3">
+                        <span class="badge bg-dark p-2 fs-6 shadow">₺{{ tip.fiyat }} / Gece</span>
+                    </div>
+                    <a href="{% url 'oda_detay' tip.id %}" class="btn btn-dark w-100">Detayları İncele</a>
+                </div>
+
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <h3 class="card-title fw-bold mb-0">{{ tip.baslik }}</h3>
+                        <span class="text-muted small"><i class="fas fa-users"></i> Maks: {{ tip.kapasite }} Kişi</span>
+                    </div>
+                    
+                    <p class="card-text text-secondary mb-4">
+                        {{ tip.aciklama|truncatechars:120 }}
+                    </p>
+
+                    <div class="mb-4">
+                        <h6 class="fw-bold small text-uppercase mb-3" style="color: #d4af37;">Oda Özellikleri</h6>
+                        <div class="d-flex flex-wrap gap-2">
+                            {% for hizmet in tip.hizmetler.all %}
+                                <span class="badge bg-light text-dark border d-flex align-items-center gap-1 p-2" style="font-weight: 500;">
+                                    <i class="{{ hizmet.ikon }} text-primary"></i> {{ hizmet.baslik }}
+                                </span>
+                            {% empty %}
+                                <span class="text-muted small">Standart oda özellikleri.</span>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <hr class="text-muted opacity-25">
+
+                    <div class="d-flex justify-content-between align-items-center mt-3">
+                        <div>
+                            {% if tip.kalan_oda_sayisi > 0 %}
+                                <small class="text-success fw-bold"><i class="fas fa-check-circle"></i> {{ tip.kalan_oda_sayisi }} Oda Müsait</small>
+                            {% else %}
+                                <small class="text-danger fw-bold"><i class="fas fa-times-circle"></i> Oda Dolu</small>
+                            {% endif %}
+                        </div>
+                        <a href="{% url "rezervasyon_yap" tip.id %}" class="btn btn-dark px-4 py-2 rounded-0 shadow-sm">RESERVASYON YAP</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<style>
+    .transition-hover {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .transition-hover:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 1rem 3rem rgba(0,0,0,.175)!important;
+    }
+</style>
+
+{% endblock content_odalar %}
