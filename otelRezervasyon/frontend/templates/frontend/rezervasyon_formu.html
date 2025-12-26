@@ -33,6 +33,30 @@
                     </div>
                 </div>
 
+                <h5 class="text-success border-bottom pb-2 mb-3 mt-4">Ödeme Yöntemi</h5>
+                <div class="p-3 bg-light rounded mb-4">
+                    <div class="d-flex justify-content-around">
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="odeme_yontemi" id="pay_nakit" value="nakit" checked>
+                            <label class="form-check-label fw-bold" for="pay_nakit">
+                                <i class="fas fa-money-bill-wave text-success me-1"></i> Nakit
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="odeme_yontemi" id="pay_kart" value="kart">
+                            <label class="form-check-label fw-bold" for="pay_kart">
+                                <i class="fas fa-credit-card text-primary me-1"></i> Kredi Kartı
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="odeme_yontemi" id="pay_havale" value="havale">
+                            <label class="form-check-label fw-bold" for="pay_havale">
+                                <i class="fas fa-university text-warning me-1"></i> Havale/EFT
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="mb-4 p-3 bg-light rounded">
                     <label class="form-label fw-bold">Toplam Misafir Sayısı</label>
                     <select name="kisi_sayisi" id="kisiSayisiSecim" class="form-select border-primary" required>
@@ -58,7 +82,7 @@
                     </div>
                 </div>
 
-                <button type="submit" class="btn btn-dark w-100 py-3 fw-bold">REZERVASYONU TAMAMLA</button>
+                <button type="submit" class="btn btn-dark w-100 py-3 fw-bold shadow">REZERVASYONU TAMAMLA</button>
             </form>
         </div>
     </div>
@@ -77,6 +101,8 @@ document.getElementById('kisiSayisiSecim').addEventListener('change', function()
                     <div class="col-md-4"><input type="text" name="ek_ad[]" class="form-control mb-2" placeholder="Ad" required></div>
                     <div class="col-md-4"><input type="text" name="ek_soyad[]" class="form-control mb-2" placeholder="Soyad" required></div>
                     <div class="col-md-4"><input type="text" name="ek_tc[]" class="form-control mb-2" placeholder="TC No" maxlength="11" required></div>
+                    <div class="col-md-6 mb-2"><input type="email" name="ek_email[]" class="form-control" placeholder="E-posta"></div>
+                    <div class="col-12 mb-2"><input type="text" name="ek_tel[]" class="form-control" placeholder="Telefon (05XX...)"></div>
                 </div>
             </div>`;
     }

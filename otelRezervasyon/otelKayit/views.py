@@ -1,7 +1,7 @@
 from django.utils import timezone
 import random
 from django.shortcuts import render, get_object_or_404, redirect
-from .models import Oda, Rezervasyon, Musteri, OdaTipi
+from .models import Oda, Odeme, Rezervasyon, Musteri, OdaTipi
 
 def home(request):
     odalari_guncelle()
@@ -20,52 +20,58 @@ def oda_detay(request, id):
 
 def odalari_guncelle():
     bugun = timezone.now().date()
-    # Çıkış tarihi bugünden önce olan ve hala oda 'Dolu' gözükenleri bul
+    # Çıkış tarihi bugün veya daha eski olan, hala dolu gözüken odaları bul
     biten_rezervasyonlar = Rezervasyon.objects.filter(cikis_tarihi__lt=bugun)
     for rez in biten_rezervasyonlar:
         oda = rez.oda
         if not oda.musait_mi:
             oda.musait_mi = True
             oda.save()
-            # Kalan oda sayısını da geri ekle
+            # Kalan oda sayısını artır
             tip = oda.oda_tipi
             tip.kalan_oda_sayisi += 1
             tip.save()
 
 def rezervasyon_yap(request, oda_tipi_id):
-    odalari_guncelle() # Her rezervasyon denemesinde sistemi tazele
+    odalari_guncelle() 
     oda_tipi = get_object_or_404(OdaTipi, id=oda_tipi_id)
     
     if request.method == 'POST':
-        # Ana kişi verileri
+        # 1. Ana Misafir Bilgileri
         ad = request.POST.get('ad')
         soyad = request.POST.get('soyad')
         tc = request.POST.get('tc_no')
         tel = request.POST.get('telefon')
-        email = request.POST.get('email') # İŞTE BURADA!
+        email = request.POST.get('email')
         kisi_sayisi = int(request.POST.get('kisi_sayisi', 1))
         
-        # Ek misafir listeleri
+        # 2. Ödeme Yöntemi (Burayı ekledik kanka!)
+        odeme_yontemi = request.POST.get('odeme_yontemi')
+        
+        # 3. Ek Misafir Listeleri
         ek_adlar = request.POST.getlist('ek_ad[]')
         ek_soyadlar = request.POST.getlist('ek_soyad[]')
         ek_tcler = request.POST.getlist('ek_tc[]')
+        ek_emailler = request.POST.getlist('ek_email[]')
+        ek_tellar = request.POST.getlist('ek_tel[]')
 
-        # TC Kontrolü
+        # 4. TC Kontrolü
         if len(tc) != 11 or not tc.isdigit():
              return render(request, 'frontend/hata.html', {'mesaj': 'Ana misafir TC no 11 haneli rakam olmalıdır.'})
 
+        # 5. Boş Oda Sorgusu
         musait_odalar = Oda.objects.filter(oda_tipi=oda_tipi, musait_mi=True)
 
         if musait_odalar.exists():
             secilen_oda = random.choice(musait_odalar)
             
-            # 1. Ana Müşteriyi get_or_create ile kaydet/bul
+            # 6. Ana Müşteriyi Kaydet
             ana_musteri, _ = Musteri.objects.get_or_create(
                 tc_no=tc,
                 defaults={'ad': ad, 'soyad': soyad, 'telefon': tel, 'email': email}
             )
 
-            # 2. Rezervasyonu oluştur (Modelindeki toplam_ucret ve kişi_Sayisi isimlerine göre)
+            # 7. Rezervasyonu Oluştur
             yeni_rezervasyon = Rezervasyon.objects.create(
                 rezervasyonu_yapan=ana_musteri,
                 oda=secilen_oda,
@@ -75,18 +81,30 @@ def rezervasyon_yap(request, oda_tipi_id):
                 kişi_Sayisi=kisi_sayisi
             )
 
-            # 3. Rezervasyonu yapanı konaklayanlara ekle
+            # 8. Ödemeyi Oluştur
+            Odeme.objects.create(
+                rezervasyon=yeni_rezervasyon,
+                tutar=yeni_rezervasyon.toplam_ucret,
+                odeme_yontemi=odeme_yontemi,
+                odendi_mi=(odeme_yontemi == 'kart')
+            )
+
+            # 9. Konaklayanlar Listesini Doldur
             yeni_rezervasyon.konaklayanlar.add(ana_musteri)
 
-            # 4. Diğer Misafirleri Kaydet ve Ekle
             for i in range(len(ek_adlar)):
                 misafir, _ = Musteri.objects.get_or_create(
                     tc_no=ek_tcler[i],
-                    defaults={'ad': ek_adlar[i], 'soyad': ek_soyadlar[i]}
+                    defaults={
+                        'ad': ek_adlar[i], 
+                        'soyad': ek_soyadlar[i],
+                        'email': ek_emailler[i] if i < len(ek_emailler) else '',
+                        'telefon': ek_tellar[i] if i < len(ek_tellar) else ''
+                    }
                 )
                 yeni_rezervasyon.konaklayanlar.add(misafir)
 
-            # 5. Odayı ve Sayacı Güncelle
+            # 10. Oda Durumunu Kapat ve Sayacı Düşür
             secilen_oda.musait_mi = False
             secilen_oda.save()
             
@@ -95,6 +113,6 @@ def rezervasyon_yap(request, oda_tipi_id):
 
             return render(request, 'frontend/basari.html', {'oda_no': secilen_oda.oda_no})
         
-        return render(request, 'frontend/hata.html', {'mesaj': 'Boş oda kalmadı!'})
+        return render(request, 'frontend/hata.html', {'mesaj': 'Seçtiğiniz oda tipinde boş oda kalmadı!'})
 
     return render(request, 'frontend/rezervasyon_formu.html', {'oda_tipi': oda_tipi})
